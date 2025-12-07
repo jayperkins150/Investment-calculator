@@ -1,0 +1,52 @@
+/* Container */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+/* Logo styling */
+.header__logo {
+  width: 80px;
+  height: auto;
+  border-radius: 8px;
+  margin: 100;
+}
+
+/* Text container */
+.header__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.header__title {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.header__subtitle {
+  margin: 0.3rem 0 0 0;
+  font-size: 1.2rem;
+  color: whitesmoke;
+}
+
+/* Responsive layout for mobile */
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header__logo {
+    width: 60px;
+  }
+
+  .header__title {
+    font-size: 1.5rem;
+  }
+
+  .header__subtitle {
+    font-size: 1rem;
+  }
+}
