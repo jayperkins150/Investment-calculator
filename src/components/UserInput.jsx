@@ -1,20 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../App.css';
 import '../Index.css';
 
-const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onReset }) => {
-  if (!userInput) {
-    return <p>No input available.</p>;
-  }
+const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onReset, viewMode, onViewModeChange }) => {
+  const [errorMessage, setErrorMessage] = useState('');
 
-  // Validation
+  // Validation: check values from userInput
   const isValid =
-    typeof userInput.initialInvestment === "number" && userInput.initialInvestment > 0 &&
-    typeof userInput.annualInvestment === "number" && userInput.annualInvestment > 0 &&
-    typeof userInput.expectedReturn === "number" && userInput.expectedReturn > 0 &&
-    typeof userInput.duration === "number" && userInput.duration > 0;
+    userInput.initialInvestment > 0 &&
+    userInput.annualInvestment > 0 &&
+    userInput.expectedReturn > 0 &&
+    userInput.duration > 0;
 
-  // Handle input changes
+  // Update error message whenever validity changes
+  useEffect(() => {
+    if (!isValid) {
+      setErrorMessage('Please enter valid positive numbers for all fields.');
+      console.error('Validation failed: Please enter valid positive numbers for all fields.');
+    } else {
+      setErrorMessage(''); // clear the message when valid
+      console.error('');
+    }
+  }, [isValid]);
+
   const handleChange = (field, rawValue) => {
     if (rawValue === "" || rawValue == null) {
       onInputChange(field, null);
@@ -26,12 +34,11 @@ const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onRes
 
   return (
     <section id="user-input">
-      {/* Input fields */}
       <form onSubmit={(e) => e.preventDefault()}>
         {/* Validation message */}
-        {!isValid && (
+        {errorMessage && (
           <p style={{ color: "red", fontWeight: "bold" }}>
-            Please enter valid positive numbers for all fields.
+            {errorMessage}
           </p>
         )}
 
@@ -101,14 +108,33 @@ const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onRes
           />
         </div>
 
-        {/* Reset button */}
-        <button
-          type="button"
-          onClick={onReset}
-        >
-          Reset
-        </button>
-      </form> 
+        {/* Buttons */}
+        <div className="input-group controls">
+          {/* Reset button */}
+          <button type="button" onClick={onReset}>
+            Reset
+          </button>
+
+          {/* Yearly view button */}
+          <button 
+            type="button" 
+            onClick={() => onViewModeChange('yearly')}
+            // Highlight the active button
+            className={`button small-button ${viewMode === 'yearly' ? 'active-toggle' : 'secondary-button'}`}
+          >
+            Yearly
+          </button>
+
+          <button 
+            type="button" 
+            onClick={() => onViewModeChange('monthly')}
+            // Highlight the active button
+            className={`button small-button ${viewMode === 'monthly' ? 'active-toggle' : 'secondary-button'}`}
+          >
+            Monthly
+          </button>
+        </div>
+      </form>
     </section>
   );
 };

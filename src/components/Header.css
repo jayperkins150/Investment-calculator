@@ -1,7 +1,7 @@
 /* Container */
 .header {
   display: flex;
-  align-items: center;
+  align-items: left;
   gap: 1rem;
   padding: 1.5rem;
 }
@@ -21,14 +21,13 @@
 }
 
 .header__title {
-  margin: 0;
+  margin: 10px;
   font-size: 2rem;
 }
 
 .header__subtitle {
-  margin: 0.3rem 0 0 0;
+  margin: 0 0 0 0;
   font-size: 1.2rem;
-  color: whitesmoke;
 }
 
 /* Responsive layout for mobile */
