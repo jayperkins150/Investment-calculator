@@ -22,8 +22,6 @@ ChartJS.register(
 // Add viewMode prop
 const InvestmentChart = ({ data = [], currency = "GBP", viewMode = "yearly" }) => {
     
-    // Use years for clarity, regardless of data resolution.
-    // If monthly, only label the years (12th, 24th, 36th period, etc.)
     const labels = data.map(item => {
         if (viewMode === 'monthly') {
             // Only show the label if the period is the end of a year
@@ -32,7 +30,7 @@ const InvestmentChart = ({ data = [], currency = "GBP", viewMode = "yearly" }) =
             }
             return ''; // Hide labels for individual months
         }
-        // If yearly view, use the actual year number
+        // If yearly view, use the year number
         return `Year ${item.year}`;
     });
 
@@ -45,7 +43,16 @@ const InvestmentChart = ({ data = [], currency = "GBP", viewMode = "yearly" }) =
         borderWidth: 2,
         tension: 0.3,
         fill: false,
-      }
+      },
+      {
+        label: `Invested Capital (${currency})`,
+        data: data.map(item => item.investedCapital),
+        borderWidth: 2,
+        tension: 0,
+        fill: false,
+        borderDash: [6, 6], // Dashed line for invested capital
+        pointRadius: 0,          
+        }
     ]
   };
 
