@@ -1,34 +1,49 @@
-import jsPDF from 'jspdf';
+import jsPDF from "jspdf";
 
-export function generatePDF(results, currency, userInput){
-    const doc = new jsPDF();
+export function generatePDF(results, currency, userInput) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
 
-    doc.setFontSize(20);
-    doc.text('Investment Report', 10, 10);
-    doc.setFontSize(12);
+  const marginX = 10;
+  const marginTop = 15;
 
-    doc.text(`Beginning Investment: ${userInput.initialInvestment}`, 10, 30);
-    doc.text(`Annual Investment: ${userInput.annualInvestment}`, 10, 40);
-    doc.text(`Return on Investment: ${userInput.expectedReturn}%`, 10, 50);
-    doc.text(`Years of Investment: ${userInput.duration}`, 10, 60);
+  const pageHeight = doc.internal.pageSize.getHeight();
 
-    let yOffset = 80;
-    const linespacing = 10;
-    const pageHeight = doc.internal.pageSize.height
-    
-    results.forEach((result) =>{
-        if (yOffset+50 > pageHeight){
-            doc.addPage();
-            yOffset = 20;
-        }
-        doc.text(`Year: ${result.year}`, 10, yOffset)
-        doc.text(`Interest (Year): ${result.interest.toFixed(2)}`,10, (yOffset+linespacing))
-        doc.text(`Interest (Total): ${result.totalInterest.toFixed(2)}`,10, (yOffset+2*linespacing))
-        doc.text(`Invested Capital: ${result.investedCapital.toFixed(2)}`,10, (yOffset+3*linespacing))
-        doc.text(`Total Investment Value: ${result.investmentValue.toFixed(2)}`,10, (yOffset+4*linespacing))
+  const formatter = new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
-        yOffset+=60;
-    })
+  // Header
+  doc.setFontSize(20);
+  doc.text("Investment Report", marginX, marginTop);
 
-    doc.save('Investment Report.pdf')
+  doc.setFontSize(12);
+  let y = marginTop + 12;
+
+  // Summary
+  doc.text(`Beginning Investment: ${formatter.format(Number(userInput.initialInvestment) || 0)}`, marginX, y); y += 8;
+  doc.text(`Annual Investment: ${formatter.format(Number(userInput.annualInvestment) || 0)}`, marginX, y); y += 8;
+  doc.text(`Return on Investment: ${Number(userInput.expectedReturn) || 0}%`, marginX, y); y += 8;
+  doc.text(`Years of Investment: ${Number(userInput.duration) || 0}`, marginX, y); y += 12;
+
+  const lineSpacing = 7;
+  const blockHeight = lineSpacing * 5 + 6; // 5 lines + a bit of padding
+
+  results.forEach((result) => {
+    // Page break before writing the block
+    if (y + blockHeight > pageHeight - 10) {
+      doc.addPage();
+      y = 20;
+    }
+
+    doc.text(`Year: ${result.year}`, marginX, y); y += lineSpacing;
+    doc.text(`Interest (Year): ${formatter.format(Number(result.interest) || 0)}`, marginX, y); y += lineSpacing;
+    doc.text(`Interest (Total): ${formatter.format(Number(result.totalInterest) || 0)}`, marginX, y); y += lineSpacing;
+    doc.text(`Invested Capital: ${formatter.format(Number(result.investedCapital) || 0)}`, marginX, y); y += lineSpacing;
+    doc.text(`Total Investment Value: ${formatter.format(Number(result.investmentValue) || 0)}`, marginX, y); y += (lineSpacing + 6);
+  });
+
+  doc.save("Investment Report.pdf");
 }
