@@ -1,27 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import '../App.css';
-import '../Index.css';
+import React, { useMemo, useState } from "react";
+import "../App.css";
+import "../Index.css";
 
-const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onReset, viewMode, onViewModeChange }) => {
-  const [errorMessage, setErrorMessage] = useState('');
-
-  // Validation: check values from userInput
-  const isValid =
-    userInput.initialInvestment > 0 &&
-    userInput.annualInvestment > 0 &&
-    userInput.expectedReturn > 0 &&
-    userInput.duration > 0;
-
-  // Update error message whenever validity changes
-  useEffect(() => {
-    if (!isValid) {
-      setErrorMessage('Please enter valid positive numbers for all fields.');
-      console.error('Validation failed: Please enter valid positive numbers for all fields.');
-    } else {
-      setErrorMessage(''); // clear the message when valid
-      console.error('');
-    }
-  }, [isValid]);
+const UserInput = ({
+  userInput,
+  onInputChange,
+  currency,
+  onCurrencyChange,
+  onReset,
+  viewMode,
+  onViewModeChange,
+}) => {
+  const [touched, setTouched] = useState({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const handleChange = (field, rawValue) => {
     if (rawValue === "" || rawValue == null) {
@@ -32,17 +23,65 @@ const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onRes
     }
   };
 
+  // Field-level validation rules
+  const errors = useMemo(() => {
+    const e = {};
+
+    const initial = userInput.initialInvestment;
+    const annual = userInput.annualInvestment;
+    const ret = userInput.expectedReturn;
+    const dur = userInput.duration;
+
+    if (initial == null || initial === "") e.initialInvestment = "Initial investment is required.";
+    else if (initial <= 0) e.initialInvestment = "Must be greater than 0.";
+
+    if (annual == null || annual === "") e.annualInvestment = "Annual investment is required.";
+    else if (annual <= 0) e.annualInvestment = "Must be greater than 0.";
+
+    if (ret == null || ret === "") e.expectedReturn = "Expected return is required.";
+    else if (ret <= 0) e.expectedReturn = "Must be greater than 0.";
+
+    if (dur == null || dur === "") e.duration = "Duration is required.";
+    else if (dur < 1) e.duration = "Must be at least 1 year.";
+
+    return e;
+  }, [userInput]);
+
+  const showError = (field) => submitAttempted || touched[field];
+  const isValid = Object.keys(errors).length === 0;
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const handleReset = () => {
+    onReset();
+    setTouched({});
+    setSubmitAttempted(false);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitAttempted(true);
+
+    if (!isValid) return;
+  };
+
+  const onRadioKeyDown = (e) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowUp") onViewModeChange("yearly");
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") onViewModeChange("monthly");
+  };
+
   return (
     <section id="user-input">
-      <form onSubmit={(e) => e.preventDefault()}>
-        {/* Validation message */}
-        {errorMessage && (
+      <form onSubmit={handleSubmit}>
+        {/* Summary message after submit attempt */}
+        {submitAttempted && !isValid && (
           <p style={{ color: "red", fontWeight: "bold" }}>
-            {errorMessage}
+            Please fix the highlighted fields.
           </p>
         )}
 
-        {/* Currency selection */}
         <div className="input-group">
           <label htmlFor="currency">Currency</label>
           <select
@@ -56,7 +95,6 @@ const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onRes
           </select>
         </div>
 
-        {/* Initial Investment input */}
         <div className="input-group">
           <label htmlFor="initial-investment">Initial Investment ({currency})</label>
           <input
@@ -66,10 +104,17 @@ const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onRes
             step="1"
             value={userInput.initialInvestment ?? ""}
             onChange={(e) => handleChange("initialInvestment", e.target.value)}
+            onBlur={() => handleBlur("initialInvestment")}
+            aria-invalid={!!errors.initialInvestment}
+            aria-describedby="initial-investment-error"
           />
+          {showError("initialInvestment") && errors.initialInvestment && (
+            <small id="initial-investment-error" style={{ color: "red" }}>
+              {errors.initialInvestment}
+            </small>
+          )}
         </div>
 
-        {/* Annual Investment input */}
         <div className="input-group">
           <label htmlFor="annual-investment">Annual Investment ({currency})</label>
           <input
@@ -79,10 +124,17 @@ const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onRes
             step="1"
             value={userInput.annualInvestment ?? ""}
             onChange={(e) => handleChange("annualInvestment", e.target.value)}
+            onBlur={() => handleBlur("annualInvestment")}
+            aria-invalid={!!errors.annualInvestment}
+            aria-describedby="annual-investment-error"
           />
+          {showError("annualInvestment") && errors.annualInvestment && (
+            <small id="annual-investment-error" style={{ color: "red" }}>
+              {errors.annualInvestment}
+            </small>
+          )}
         </div>
 
-        {/* Expected Return input */}
         <div className="input-group">
           <label htmlFor="expected-return">Expected Return (%)</label>
           <input
@@ -92,10 +144,17 @@ const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onRes
             step="0.1"
             value={userInput.expectedReturn ?? ""}
             onChange={(e) => handleChange("expectedReturn", e.target.value)}
+            onBlur={() => handleBlur("expectedReturn")}
+            aria-invalid={!!errors.expectedReturn}
+            aria-describedby="expected-return-error"
           />
+          {showError("expectedReturn") && errors.expectedReturn && (
+            <small id="expected-return-error" style={{ color: "red" }}>
+              {errors.expectedReturn}
+            </small>
+          )}
         </div>
 
-        {/* Duration input */}
         <div className="input-group">
           <label htmlFor="duration">Duration (years)</label>
           <input
@@ -105,34 +164,44 @@ const UserInput = ({ userInput, onInputChange, currency, onCurrencyChange, onRes
             step="1"
             value={userInput.duration ?? ""}
             onChange={(e) => handleChange("duration", e.target.value)}
+            onBlur={() => handleBlur("duration")}
+            aria-invalid={!!errors.duration}
+            aria-describedby="duration-error"
           />
+          {showError("duration") && errors.duration && (
+            <small id="duration-error" style={{ color: "red" }}>
+              {errors.duration}
+            </small>
+          )}
         </div>
 
-        {/* Buttons */}
         <div className="input-group controls">
-          {/* Reset button */}
-          <button type="button" onClick={onReset}>
+          <button type="button" onClick={handleReset}>
             Reset
           </button>
 
-          {/* Yearly view button */}
-          <button 
-            type="button" 
-            onClick={() => onViewModeChange('yearly')}
-            // Highlight the active button
-            className={`button small-button ${viewMode === 'yearly' ? 'active-toggle' : 'secondary-button'}`}
-          >
-            Yearly
-          </button>
+          <div role="radiogroup" aria-label="Time period" onKeyDown={onRadioKeyDown}>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={viewMode === "yearly"}
+              onClick={() => onViewModeChange("yearly")}
+            >
+              Yearly
+            </button>
 
-          <button 
-            type="button" 
-            onClick={() => onViewModeChange('monthly')}
-            // Highlight the active button
-            className={`button small-button ${viewMode === 'monthly' ? 'active-toggle' : 'secondary-button'}`}
-          >
-            Monthly
-          </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={viewMode === "monthly"}
+              onClick={() => onViewModeChange("monthly")}
+            >
+              Monthly
+            </button>
+          </div>
+
+          {/* Force validation on action */}
+          <button type="submit" disabled={!isValid}>Calculate</button>
         </div>
       </form>
     </section>
