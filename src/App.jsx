@@ -42,7 +42,7 @@ function App() {
 
   return (
     <>
-      <h1>&emsp;React Investment Calculator</h1>
+      <h1>React Investment Calculator</h1>
       <Header />
       <UserInput 
         userInput={userInput}
