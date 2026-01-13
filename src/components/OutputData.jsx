@@ -63,7 +63,8 @@ const OutputData = ({ userInput, currency = "GBP", viewMode }) => {
     }
     
     // Use calculatedData for all rendering logic below this point
-    const resultData = calculatedData; 
+    const resultData = calculatedData;
+    const periodLabel = viewMode === 'monthly' ? 'Month' : 'Year';
 
     const formatter = new Intl.NumberFormat("en-GB", {
         style: "currency",
