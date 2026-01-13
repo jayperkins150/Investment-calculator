@@ -3,31 +3,31 @@
   display: flex;
   align-items: left;
   gap: 1rem;
-  padding: 1.5rem;
+  height: auto;
+  position: static;
 }
 
 /* Logo styling */
 .header__logo {
   width: 80px;
   height: auto;
-  border-radius: 8px;
-  margin: 100;
 }
 
 /* Text container */
 .header__text {
   display: flex;
   flex-direction: column;
+  padding-left: 1.5rem;
 }
 
 .header__title {
-  margin: 10px;
-  font-size: 2rem;
+  font-size: 3rem;
+  color: white;
 }
 
 .header__subtitle {
-  margin: 0 0 0 0;
-  font-size: 1.2rem;
+  font-size: 2rem;
+  color: white;
 }
 
 /* Responsive layout for mobile */
@@ -42,10 +42,10 @@
   }
 
   .header__title {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 
   .header__subtitle {
-    font-size: 1rem;
+    font-size: 1.5rem;
   }
 }
