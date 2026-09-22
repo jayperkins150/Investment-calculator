@@ -90,12 +90,13 @@ button{
 }
 
 button:hover{
-  background-color: #4a4a4a;
+  background-color: #969696;
   color:#fff;
 }
 
 button:active{
-  transform: translate(3px);
+  background-color: black;
+  color: #fff;
 }
 
 #user-input {
