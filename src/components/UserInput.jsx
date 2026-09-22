@@ -185,6 +185,7 @@ const UserInput = ({
               type="button"
               role="radio"
               aria-checked={viewMode === "yearly"}
+              className={viewMode === "yearly" ? "active-period" : ""}
               onClick={() => onViewModeChange("yearly")}
             >
               Yearly
@@ -194,6 +195,7 @@ const UserInput = ({
               type="button"
               role="radio"
               aria-checked={viewMode === "monthly"}
+              className={viewMode === "monthly" ? "active-period" : ""}
               onClick={() => onViewModeChange("monthly")}
             >
               Monthly
