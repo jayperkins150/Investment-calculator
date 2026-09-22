@@ -87,14 +87,14 @@ button{
   font-weight: bold;
 }
 
-button:hover{
-  background-color: #969696;
-  color:#fff;
+button:active{
+  background-color: black;
+  color: #fff;
 }
 
-button:active{
-  background-color: #fff;
-  color:#969696;
+button.active-period {
+  background-color: black;
+  color: #fff;
 }
 
 button.active-period {
