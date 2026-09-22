@@ -90,5 +90,5 @@ button{
 button.active-period {
   background-color: black;
   color: #fff;
-  border: 1px solid white;
+  border: 3px solid #969696;
 }
