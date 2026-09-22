@@ -93,5 +93,11 @@ button:hover{
 }
 
 button:active{
-  transform: translate(3px);
+  height: 95%;
+  width: 95%;
+}
+
+button.active-period {
+  background-color: #d3d3d3;
+  color: #363636;
 }
