@@ -94,11 +94,6 @@ button:hover{
   color:#fff;
 }
 
-button:active{
-  background-color: black;
-  color: #fff;
-}
-
 #user-input {
   padding: 1rem;
   max-width: 30rem;
